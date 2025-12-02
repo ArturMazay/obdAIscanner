@@ -1,5 +1,6 @@
 package com.aistudio
 
+import com.aistudio.config.ApiConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -39,7 +40,7 @@ val ktorClientModule = module {
             }
 
             defaultRequest {
-                header(HttpHeaders.Authorization, "Bearer YOUR_HUGGING_FACE_TOKEN_HERE")
+                header(HttpHeaders.Authorization, "Bearer ${ApiConfig.huggingFaceToken}")
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
             }
         }

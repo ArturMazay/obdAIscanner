@@ -1,9 +1,16 @@
-# Compose Multiplatform Application
+# OBDAI - OBD Scanner AI
+
+Compose Multiplatform приложение с интеграцией AI ассистента для помощи с диагностикой автомобилей через OBD.
 
 ## Before running!
  - check your system with [KDoctor](https://github.com/Kotlin/kdoctor)
  - install JDK 17 or higher on your machine
  - add `local.properties` file to the project root and set a path to Android SDK there
+ - **Настройте Hugging Face API токен:**
+   - Скопируйте `local.properties.example` в `local.properties`
+   - Добавьте свой токен: `hf.api.token=your_token_here`
+   - Или установите переменную окружения: `export HF_API_TOKEN=your_token_here`
+   - Получите токен на: https://huggingface.co/settings/tokens
 
 ### Android
 To run the application on android device/emulator:  
