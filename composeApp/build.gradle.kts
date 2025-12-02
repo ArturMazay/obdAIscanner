@@ -12,8 +12,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.hotReload)
     alias(libs.plugins.kotlinx.serialization)
-    alias(libs.plugins.room)
-    alias(libs.plugins.ksp)
+    // Room плагин отключен для iOS - вызывает проблемы сборки
+    // alias(libs.plugins.room)
+    // alias(libs.plugins.ksp)
 
 }
 
@@ -61,7 +62,8 @@ kotlin {
 
             implementation(libs.coil)
             implementation(libs.coil.network.ktor)
-            implementation(libs.room.runtime)
+            // Room отключен - не используется в проекте и вызывает проблемы на iOS
+            // implementation(libs.room.runtime)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.koin.compose.viewmodel.nav)
@@ -163,16 +165,18 @@ tasks.withType<ComposeHotRun>().configureEach {
     mainClass.set("MainKt")
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
+// Room конфигурация отключена - не используется в проекте
+// room {
+//     schemaDirectory("$projectDir/schemas")
+// }
 
-dependencies {
-    with(libs.room.compiler) {
-        add("kspAndroid", this)
-        add("kspJvm", this)
-        add("kspIosX64", this)
-        add("kspIosArm64", this)
-        add("kspIosSimulatorArm64", this)
-    }
-}
+// KSP зависимости отключены - Room не используется
+// dependencies {
+//     with(libs.room.compiler) {
+//         add("kspAndroid", this)
+//         add("kspJvm", this)
+//         add("kspIosX64", this)
+//         add("kspIosArm64", this)
+//         add("kspIosSimulatorArm64", this)
+//     }
+// }
