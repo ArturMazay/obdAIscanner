@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -79,7 +80,9 @@ fun MainScreen(
         Text(
             text = stringResource(Res.string.cyclone),
             fontFamily = FontFamily(Font(Res.font.IndieFlower_Regular)),
-            style = MaterialTheme.typography.displayLarge,
+            style = MaterialTheme.typography.displayLarge.copy(
+                fontSize = 26.sp
+            ),
             modifier = Modifier.padding(bottom = 16.dp)
         )
 

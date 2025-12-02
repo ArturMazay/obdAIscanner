@@ -12,6 +12,10 @@ pluginManagement {
         }
         gradlePluginPortal()
         mavenCentral()
+        // Репозиторий для плагинов JetBrains
+        maven {
+            url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        }
     }
 }
 
