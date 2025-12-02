@@ -65,9 +65,15 @@ data class Choice(
 // Формат ошибки от Novita API
 @Serializable
 data class ApiErrorResponse(
-    val message: String,
+    val message: String? = null,
     val type: String? = null,
     val trace_id: String? = null
+)
+
+// Формат ошибки с простым полем error (строка)
+@Serializable
+data class SimpleErrorResponse(
+    val error: String
 )
 
 // Старый формат ошибки (для совместимости)

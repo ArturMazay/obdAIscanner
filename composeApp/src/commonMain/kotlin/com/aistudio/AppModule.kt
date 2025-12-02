@@ -40,7 +40,11 @@ val ktorClientModule = module {
             }
 
             defaultRequest {
-                header(HttpHeaders.Authorization, "Bearer ${ApiConfig.huggingFaceToken}")
+                val token = ApiConfig.huggingFaceToken
+                // Логируем первые 10 символов токена для отладки (безопасно)
+                val tokenPreview = if (token.length > 10) "${token.take(10)}..." else token
+                println("🔵 [AppModule] Используется токен: $tokenPreview")
+                header(HttpHeaders.Authorization, "Bearer $token")
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
             }
         }

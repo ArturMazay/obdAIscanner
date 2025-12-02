@@ -5,6 +5,7 @@ import com.aistudio.model.ChatRequest
 import com.aistudio.model.ChatResponse
 import com.aistudio.model.ChatResponseList
 import com.aistudio.model.ErrorResponse
+import com.aistudio.model.SimpleErrorResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -154,21 +155,29 @@ class AssistantDataSourceImpl(
                     
                     // Пробуем разные форматы ошибок
                     val errorMessage = try {
-                        // Пробуем новый формат Novita API
-                        val apiError: ApiErrorResponse = response.body()
-                        println("🔴 [AssistantDataSource] Распарсен ApiErrorResponse: ${apiError.message}")
-                        apiError.message
-                    } catch (e1: Exception) {
-                        println("🔴 [AssistantDataSource] Ошибка парсинга ApiErrorResponse: ${e1.message}")
+                        // Пробуем простой формат {"error": "строка"}
+                        val simpleError: SimpleErrorResponse = response.body()
+                        println("🔴 [AssistantDataSource] Распарсен SimpleErrorResponse: ${simpleError.error}")
+                        simpleError.error
+                    } catch (e0: Exception) {
+                        println("🔴 [AssistantDataSource] Ошибка парсинга SimpleErrorResponse: ${e0.message}")
                         try {
-                            // Пробуем старый формат с вложенным error
-                            val errorResponse: ErrorResponse = response.body()
-                            println("🔴 [AssistantDataSource] Распарсен ErrorResponse: ${errorResponse.error.message}")
-                            errorResponse.error.message
-                        } catch (e2: Exception) {
-                            println("🔴 [AssistantDataSource] Ошибка парсинга ErrorResponse: ${e2.message}")
-                            // Используем raw текст или дефолтное сообщение
-                            errorText ?: "Ошибка запроса: ${response.status.value} ${response.status.description}"
+                            // Пробуем новый формат Novita API {"message": "...", "type": "..."}
+                            val apiError: ApiErrorResponse = response.body()
+                            println("🔴 [AssistantDataSource] Распарсен ApiErrorResponse: ${apiError.message}")
+                            apiError.message ?: "Неизвестная ошибка"
+                        } catch (e1: Exception) {
+                            println("🔴 [AssistantDataSource] Ошибка парсинга ApiErrorResponse: ${e1.message}")
+                            try {
+                                // Пробуем старый формат с вложенным error
+                                val errorResponse: ErrorResponse = response.body()
+                                println("🔴 [AssistantDataSource] Распарсен ErrorResponse: ${errorResponse.error.message}")
+                                errorResponse.error.message
+                            } catch (e2: Exception) {
+                                println("🔴 [AssistantDataSource] Ошибка парсинга ErrorResponse: ${e2.message}")
+                                // Используем raw текст или дефолтное сообщение
+                                errorText ?: "Ошибка запроса: ${response.status.value} ${response.status.description}"
+                            }
                         }
                     }
                     println("🔴 [AssistantDataSource] Финальное сообщение об ошибке: $errorMessage")

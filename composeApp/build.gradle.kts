@@ -108,6 +108,20 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Читаем токен из local.properties
+        val localProperties = java.util.Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { localProperties.load(it) }
+        }
+        val hfToken = localProperties.getProperty("hf.api.token") ?: System.getenv("HF_API_TOKEN") ?: ""
+        
+        buildConfigField("String", "HF_API_TOKEN", "\"$hfToken\"")
+    }
+    
+    buildFeatures {
+        buildConfig = true
     }
 }
 
