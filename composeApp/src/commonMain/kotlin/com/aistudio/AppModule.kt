@@ -5,11 +5,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.request.header
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -21,11 +21,7 @@ val appModule = module {
             json = get()
         )
     } bind AssistantDataSource::class
-    single {
-        AssistantViewModel(
-            dataSource = get()
-        )
-    }
+    single { AssistantViewModel(dataSource = get()) }
 }
 
 
