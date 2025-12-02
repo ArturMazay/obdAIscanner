@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 
 //@Composable
@@ -66,7 +66,7 @@ fun App() {
 
 @Composable
 fun MainScreen(
-    viewModel: AssistantViewModel = koinViewModel()
+    viewModel: AssistantViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     

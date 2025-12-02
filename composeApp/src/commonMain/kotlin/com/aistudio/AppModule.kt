@@ -10,20 +10,18 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.dsl.viewModel
 
 
 val appModule = module {
-    single<AssistantDataSource> {
+    single {
         AssistantDataSourceImpl(
             httpClient = get(),
             json = get()
         )
-    }
-    viewModel {
+    } bind AssistantDataSource::class
+    single {
         AssistantViewModel(
             dataSource = get()
         )
