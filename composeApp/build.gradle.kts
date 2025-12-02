@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
+
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.compose.reload.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import java.util.Properties
 
@@ -65,11 +68,6 @@ kotlin {
 
             implementation(libs.coil)
             implementation(libs.coil.network.ktor)
-            // Room отключен - не используется в проекте и вызывает проблемы на iOS
-            // implementation(libs.room.runtime)
-            // Lifecycle зависимости убраны из commonMain - не поддерживают iOS
-            // implementation(libs.androidx.lifecycle.viewmodel)
-            // implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.koin.compose.viewmodel.nav)
             implementation(libs.koin.compose.viewmodel)
         }
@@ -103,6 +101,7 @@ kotlin {
         }
 
     }
+
 }
 
 android {
@@ -126,6 +125,13 @@ android {
             localPropertiesFile.inputStream().use { localProperties.load(it) }
         }
         val hfToken = localProperties.getProperty("hf.api.token") ?: System.getenv("HF_API_TOKEN") ?: ""
+        
+        val tokenPreview = if (hfToken.length > 10) "${hfToken.take(10)}..." else hfToken
+        println("🔵 [build.gradle.kts] Токен из local.properties: $tokenPreview")
+        println("🔵 [build.gradle.kts] Длина токена: ${hfToken.length}")
+        if (hfToken.isEmpty() || hfToken == "YOUR_HUGGING_FACE_TOKEN_HERE") {
+            println("🔴 [build.gradle.kts] ВНИМАНИЕ: Токен не установлен в local.properties!")
+        }
         
         buildConfigField("String", "HF_API_TOKEN", "\"$hfToken\"")
     }
@@ -168,9 +174,9 @@ compose.desktop {
 composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
-tasks.withType<ComposeHotRun>().configureEach {
-    mainClass.set("MainKt")
-}
+//tasks.withType<ComposeHotRun>().configureEach {
+//    mainClass.set("MainKt")
+//}
 
 // Room конфигурация отключена - не используется в проекте
 // room {

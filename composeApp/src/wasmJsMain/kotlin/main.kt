@@ -1,6 +1,6 @@
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
-import com.aistudio.App
+import com.aistudio.ui.App
 import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)

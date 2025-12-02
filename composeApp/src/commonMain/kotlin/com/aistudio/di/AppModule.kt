@@ -1,6 +1,11 @@
-package com.aistudio
+package com.aistudio.di
 
+import com.aistudio.ui.AssistantViewModel
 import com.aistudio.config.ApiConfig
+import com.aistudio.data.networkDataSource.AssistantDataSourceImpl
+import com.aistudio.domain.assistantRepository.AssistantRepository
+import com.aistudio.domain.assistantRepository.AssistantRepositoryImpl
+import com.aistudio.domain.assistantRepository.AssistantDataSource
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -10,18 +15,27 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
-
+/**
+ * Модуль зависимостей приложения
+ * Настроена чистая архитектура:
+ * DataSource (сетевой слой) -> Repository (доменный слой) -> ViewModel (презентационный слой)
+ */
 val appModule = module {
-    single {
-        AssistantDataSourceImpl(
-            httpClient = get(),
-            json = get()
-        )
-    } bind AssistantDataSource::class
-    single { AssistantViewModel(dataSource = get()) }
+    // Data Layer: Сетевой источник данных
+    single<AssistantDataSource> { AssistantDataSourceImpl(httpClient = get()) }
+    
+    // Domain Layer: Репозиторий
+    single<AssistantRepository> { AssistantRepositoryImpl(networkDataSource = get())
+    }
+    
+    // Presentation Layer: ViewModel
+    single { 
+        AssistantViewModel(
+            repository = get()
+        ) 
+    }
 }
 
 
@@ -45,9 +59,6 @@ val ktorClientModule = module {
 
             defaultRequest {
                 val token = ApiConfig.huggingFaceToken
-                // Логируем первые 10 символов токена для отладки (безопасно)
-                val tokenPreview = if (token.length > 10) "${token.take(10)}..." else token
-                println("🔵 [AppModule] Используется токен: $tokenPreview")
                 header(HttpHeaders.Authorization, "Bearer $token")
                 header(HttpHeaders.ContentType, ContentType.Application.Json)
             }
