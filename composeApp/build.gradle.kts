@@ -32,12 +32,15 @@ kotlin {
         binaries.executable()
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
+    // iOS таргеты - явное объявление для лучшей поддержки IDE
+    val iosTargets = listOf(
+        iosX64("iosX64"),
+        iosArm64("iosArm64"),
+        iosSimulatorArm64("iosSimulatorArm64")
+    )
+    
+    iosTargets.forEach { target ->
+        target.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
         }
