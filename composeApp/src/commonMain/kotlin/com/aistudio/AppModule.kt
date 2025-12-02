@@ -13,11 +13,21 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.dsl.viewModel
 
 
 val appModule = module {
-    singleOf(::AssistantDataSourceImpl) bind AssistantDataSource::class
-    viewModelOf(::AssistantViewModel)
+    single<AssistantDataSource> {
+        AssistantDataSourceImpl(
+            httpClient = get(),
+            json = get()
+        )
+    }
+    viewModel {
+        AssistantViewModel(
+            dataSource = get()
+        )
+    }
 }
 
 
