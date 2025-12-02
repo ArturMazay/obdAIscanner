@@ -67,8 +67,9 @@ kotlin {
             implementation(libs.coil.network.ktor)
             // Room отключен - не используется в проекте и вызывает проблемы на iOS
             // implementation(libs.room.runtime)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
+            // Lifecycle зависимости убраны из commonMain - не поддерживают iOS
+            // implementation(libs.androidx.lifecycle.viewmodel)
+            // implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.koin.compose.viewmodel.nav)
             implementation(libs.koin.compose.viewmodel)
         }
@@ -86,6 +87,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.koin.android)
+            // Lifecycle зависимости только для Android
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.runtime.compose)
         }
 
         jvmMain.dependencies {
