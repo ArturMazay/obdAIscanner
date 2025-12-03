@@ -1,47 +1,42 @@
-package com.aistudio.domain.model
+package com.aistudio.data.networkDataSource.model
 
-import com.aistudio.data.networkDataSource.model.Choice
-import com.aistudio.data.networkDataSource.model.Usage
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-/**
- * Доменная модель ответа от AI ассистента
- * Соответствует структуре сетевой модели OpenAiFormatAnswerResponse,
- * но содержит дополнительные поля для ошибки и статуса загрузки
- */
-data class ChatAnswer(
+
+// OpenAI совместимый формат ответа
+@Serializable
+data class OpenAiFormatAnswerResponse(
     // Уникальный идентификатор ответа
     // Пример: "e3f5ad2bc99c5cb5e9abfa4169d489bf"
     val id: String? = null,
-    
-    // Тип объекта (обычно "chat.completion")
+
+    // Тип объекта (обычно "chat.completion" для chat completions API)
     // Пример: "chat.completion"
+    // Используем обратные кавычки, так как object - зарезервированное слово в Kotlin
+    @SerialName("object")
     val objectType: String? = null,
-    
+
     // Unix timestamp создания ответа (в секундах)
     // Пример: 1764691379
     val created: Long? = null,
-    
+
     // Название модели, которая сгенерировала ответ
     // Пример: "deepseek/deepseek-v3.2"
     val model: String? = null,
-    
+
     // Массив вариантов ответов (обычно один элемент)
     // Каждый элемент содержит сообщение от ассистента
     val choices: List<Choice>? = null,
-    
+
     // Информация об использовании токенов
     // Содержит количество токенов в промпте, ответе и общее количество
-    // Пример: Usage(prompt_tokens=74, completion_tokens=115, total_tokens=189)
     val usage: Usage? = null,
-    
+
     // Отпечаток системы (fingerprint) для отслеживания версии модели
     // Пример: "" или "fp_abc123..."
-    val systemFingerprint: String? = null,
-    
+    val system_fingerprint: String? = null,
+
     // Альтернативный формат для inference API (если используется другой endpoint)
-    val generatedText: String? = null,
-    
-    // Дополнительные поля для обработки ошибок и статуса
-    val error: String? = null,
-    val isLoading: Boolean = false
+    val generated_text: String? = null
 )

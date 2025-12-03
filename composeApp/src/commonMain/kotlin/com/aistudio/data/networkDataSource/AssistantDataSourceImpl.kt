@@ -1,11 +1,12 @@
 package com.aistudio.data.networkDataSource
 
+import com.aistudio.data.networkDataSource.helpers.NetworkToDomainMapper.toChatAnswer
 import com.aistudio.data.networkDataSource.helpers.ResultResponse
 import com.aistudio.domain.assistantRepository.AssistantDataSource
 import com.aistudio.domain.model.ChatAnswer
 import com.aistudio.data.networkDataSource.model.ChatMessage
 import com.aistudio.data.networkDataSource.model.ChatRequest
-import com.aistudio.data.networkDataSource.model.ChatAnswerResponse
+import com.aistudio.data.networkDataSource.model.OpenAiFormatAnswerResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -14,7 +15,8 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Реализация источника данных для AI ассистента
@@ -37,14 +39,29 @@ class AssistantDataSourceImpl(
             handleResponse(response)
 
         } catch (e: Exception) {
+            println("🔴 [AssistantDataSource] Исключение при отправке запроса: ${e.message}")
+            e.printStackTrace()
             ResultResponse.Error(e.message ?: "Неизвестная ошибка")
         }
 
 
     private fun createRequest(message: String): ChatRequest {
+
+            // Формат запроса для Ollama API
+            val systemMessage = """
+                Ты полезный AI ассистент. Отвечай на вопросы пользователя четко и по делу.
+
+                ВАЖНО:
+                - Отвечай обычным текстом, БЕЗ markdown разметки (не используй ```json, ```, **, и т.д.)
+            """.trimIndent()
+
         return ChatRequest(
             model = MODEL_NAME,
             messages = listOf(
+                ChatMessage(
+                    role = "system",
+                    content = systemMessage
+                ),
                 ChatMessage(
                     role = "user",
                     content = message
@@ -65,7 +82,7 @@ class AssistantDataSourceImpl(
             HttpStatusCode.OK -> {
                 try {
                     // DTO под формат ответа HF/OpenAI
-                    val dto: ChatAnswerResponse = response.body()
+                    val dto: OpenAiFormatAnswerResponse = response.body()
                     val chatAnswer = dto.toChatAnswer()
                     // Проверяем что есть хотя бы какой-то текст
                     val hasText = chatAnswer.choices?.firstOrNull()?.message?.content != null ||

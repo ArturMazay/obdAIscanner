@@ -1,4 +1,4 @@
-package com.aistudio.theme
+package com.aistudio.ui.theme
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
