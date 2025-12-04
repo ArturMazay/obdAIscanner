@@ -5,13 +5,13 @@ import kotlinx.serialization.Serializable
 /**
  * Формат ответа для структурированного JSON
  */
-@Serializable
-data class ChatRequest(
-    val model: String,
-    val messages: List<ChatMessage>,
-    val stream: Boolean = false,
-    val temperature: Double = 0.7
-)
+//@Serializable
+//data class ChatRequest(
+//    val model: String,
+//    val messages: List<ChatMessage>,
+//    val stream: Boolean = false,
+//    val temperature: Double = 0.7
+//)
 
 /**
  * JSON Schema для структурированного ответа (опционально)

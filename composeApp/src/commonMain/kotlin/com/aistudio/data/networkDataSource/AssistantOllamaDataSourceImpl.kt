@@ -41,10 +41,42 @@ class AssistantOllamaDataSourceImpl(
         }
     }
 
-    override suspend fun sendMessage(message: String): ResultResponse<ChatAnswer> = try {
+    override suspend fun sendMessage(
+        message: String,
+        conversationHistory: List<com.aistudio.data.networkDataSource.model.ChatMessage>
+    ): ResultResponse<ChatAnswer> = try {
         val request = createRequest(message)
+        
+        // Логируем запрос
+        println("=".repeat(80))
+        println("🔵 [AssistantOllamaDataSourceImpl] Отправка запроса к Ollama API")
+        println("🔵 [AssistantOllamaDataSourceImpl] URL: $API_URL")
+        println("🔵 [AssistantOllamaDataSourceImpl] Модель: $MODEL_NAME")
+        println("🔵 [AssistantOllamaDataSourceImpl] Вопрос пользователя: $message")
+        println("=".repeat(80))
+        
         val response: HttpResponse = httpClient.post(API_URL) { setBody(request) }
-        handleResponse(response)
+        
+        println("🔵 [AssistantOllamaDataSourceImpl] Получен ответ. Статус: ${response.status}")
+        
+        // Читаем и логируем сырой ответ ДО парсинга
+        val rawResponse = try {
+            response.bodyAsText()
+        } catch (e: Exception) {
+            println("🟡 [AssistantOllamaDataSourceImpl] Не удалось прочитать сырой ответ: ${e.message}")
+            null
+        }
+        
+        // Логируем сырой ответ
+        rawResponse?.let {
+            println("=".repeat(80))
+            println("🔵 [AssistantOllamaDataSourceImpl] Сырой ответ от Ollama API (${it.length} символов):")
+            println("=".repeat(80))
+            println(it)
+            println("=".repeat(80))
+        }
+        
+        handleResponse(response, rawResponse)
 
     } catch (e: Exception) {
         println("🔴 [AssistantOllamaDataSourceImpl] Исключение при отправке запроса: ${e.message}")
@@ -75,12 +107,12 @@ class AssistantOllamaDataSourceImpl(
      * - при ошибках читаем тело как текст и возвращаем осмысленное сообщение
      */
     @OptIn(ExperimentalTime::class)
-    private suspend fun handleResponse(response: HttpResponse): ResultResponse<ChatAnswer> {
+    private suspend fun handleResponse(response: HttpResponse, rawResponse: String? = null): ResultResponse<ChatAnswer> {
         return when (val status = response.status) {
             HttpStatusCode.OK -> {
                 try {
-                    // Читаем сырой ответ
-                    val responseText = response.bodyAsText()
+                    // Используем переданный сырой ответ или читаем заново
+                    val responseText = rawResponse ?: response.bodyAsText()
 
                     // Ollama возвращает streaming ответ в формате NDJSON (newline-delimited JSON)
                     // Каждая строка - отдельный JSON объект
@@ -219,4 +251,5 @@ class AssistantOllamaDataSourceImpl(
         }
     }
 }
+
 

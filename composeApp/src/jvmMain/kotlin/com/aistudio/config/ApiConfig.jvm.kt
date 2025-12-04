@@ -2,12 +2,15 @@ package com.aistudio.config
 
 import java.util.Properties
 import java.io.File
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 actual object ApiConfig {
+    @OptIn(ExperimentalTime::class)
     actual val huggingFaceToken: String
         get() {
             // 1. Проверяем переменную окружения
-            System.getenv("HF_API_TOKEN")?.let { return it }
+            Clock.System.getenv("HF_API_TOKEN")?.let { return it }
             
             // 2. Читаем из local.properties для JVM
             val localPropertiesFile = File("local.properties")
@@ -21,5 +24,6 @@ actual object ApiConfig {
             return "YOUR_HUGGING_FACE_TOKEN_HERE"
         }
 }
+
 
 
